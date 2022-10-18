@@ -8,6 +8,69 @@ class Column;
 template<class Number, std::size_t Rows, std::size_t Cols>
 class Row;
 
+template<class Number, std::size_t Rows, std::size_t Cols>
+class Matrix;
+
+template<class Number, std::size_t Rows, std::size_t Cols>
+class ColumnSIterator;
+
+
+
+
+
+
+
+
+
+
+template<class Number, std::size_t Rows, std::size_t Cols>
+class ColumnS {
+private:
+    Matrix<Number, Rows, Cols>& _matrix;
+public:
+    ColumnS(Matrix<Number, Rows, Cols>& initial):
+        _matrix{initial} {}
+
+    ColumnSIterator<Number, Rows, Cols> begin() {
+        return ColumnSIterator(_matrix, 0);
+    }
+
+    ColumnSIterator<Number, Rows, Cols> end() {
+        return ColumnSIterator(_matrix, Cols);
+    }
+};
+
+template<class Number, std::size_t Rows, std::size_t Cols>
+class ColumnSIterator {
+private:
+    std::size_t _idx;
+    Matrix<Number, Rows, Cols>& _matrix;
+public:
+    ColumnSIterator(Matrix<Number, Rows, Cols>& initial, std::size_t idx):
+        _idx{idx},
+        _matrix{initial} {}
+        
+    ColumnSIterator<Number, Rows, Cols> operator++() {
+        _idx += 1;
+        return *this;
+    }
+
+    bool operator!=(ColumnSIterator other) {
+        return _idx != other._idx;
+    }
+
+    Column<Number, Rows, Cols> operator*() const {
+        return _matrix.column(_idx);
+    }
+};
+
+
+
+
+
+
+
+
 
 template<class Number, std::size_t Rows, std::size_t Cols>
 class Matrix {
@@ -35,6 +98,10 @@ public:
 
     Row<Number, Rows, Cols> row(std::size_t idx) {
         return Row(*this, idx);
+    }
+
+    ColumnS<Number, Rows, Cols> columns() {
+        return ColumnS(*this);
     }
 };
 
@@ -189,5 +256,13 @@ int main() {
     auto r = lol.row(0);
     for (auto& i : r) {
         std::cout << i << ' ';
+    }
+
+    std::cout << "\n\n";
+    for (auto column : lol.columns()) {
+        for (auto elem : column) {
+            std::cout << elem << ' ';
+        }
+        std::cout << '\n';
     }
 }
