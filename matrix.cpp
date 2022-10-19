@@ -2,8 +2,47 @@
 #include <stdexcept>
 
 
+template<class T>
+concept Rangeable = requires(T val) {
+    val.begin();
+    val.end();
+};
 
-template<class Range, class Iterator, class Storaged>
+
+template<class T>
+concept Iterable = requires(T val) {
+    *val;
+    ++val;
+    val != val;
+};
+
+template<class Range, class Iterator> requires Rangeable<Range> && Iterable<Iterator>
+class ZippedIterator {
+private:
+    Iterator _first;
+    Iterator _second;
+public:
+    ZippedIterator(Iterator first, Iterator second):
+        _first{first}, 
+        _second{second} {}
+
+    ZippedIterator<Range, Iterator> operator++() {
+        ++_first;
+        ++_second;
+        return *this;
+    }
+
+    bool operator!=(ZippedIterator<Range, Iterator> other) {
+        return *this != other;
+    }
+
+    template<class Storaged>
+    const std::tuple<Storaged, Storaged>& operator*() {
+        return std::tuple{*_first, *_second};
+    }
+};
+
+template<class Range> requires Rangeable<Range>
 class ZippedRange {
 private:
     Range _first;
@@ -13,42 +52,21 @@ public:
         _first{first},
         _second{second} {}
     
-    std::tuple<Iterator, Iterator> begin() {
-        return std::tuple{_first.begin(), _second.begin()};
+    template<class Iterator> requires Iterable<Iterator>
+    ZippedIterator<Range, Iterator> begin() {
+        return ZippedIterator<Range, Iterator>(_first.begin(), _second.begin());
     }
 
-    std::tuple<Iterator, Iterator> end() {
-        return std::tuple{_first.end(), _second.end()};
-    }
-};
-
-template<class Range, class Iterator, class Storaged>
-class ZippedIterator {
-private:
-    Iterator _first;
-    Iterator _second;
-public:
-    ZippedIterator<Range, Iterator, Storaged> operator++() {
-        ++_first;
-        ++_second;
-        return *this;
-    }
-
-    bool operator!=(ZippedIterator<Range, Iterator, Storaged> other) {
-        return *this != other;
-    }
-
-    const std::tuple<Storaged, Storaged>& operator*() {
-        return std::tuple{*_first, *_second};
+    template<class Iterator> requires Iterable<Iterator>
+    ZippedIterator<Range, Iterator> end() {
+        return ZippedIterator<Range, Iterator>(_first.end(), _second.end());
     }
 };
 
-template<class Range, class Iterator, class Storaged>
-ZippedRange<Range, Iterator, Storaged> zip(Range first, Range second) {
-    return ZippedRange<Range, Iterator, Storaged>(first, second);
+template<class Range> requires Rangeable<Range>
+ZippedRange<Range> zip(Range first, Range second) {
+    return ZippedRange<Range>(first, second);
 }
-
-
 
 
 
@@ -64,6 +82,9 @@ class Matrix;
 
 template<class Number, std::size_t Rows, std::size_t Cols>
 class ColumnSIterator;
+
+template<class Number, std::size_t Rows, std::size_t Cols>
+class RowSIterator;
 
 
 
@@ -118,6 +139,50 @@ public:
 
 
 
+template<class Number, std::size_t Rows, std::size_t Cols>
+class RowS {
+private:
+    Matrix<Number, Rows, Cols>& _matrix;
+public:
+    RowS(Matrix<Number, Rows, Cols>& initial):
+        _matrix{initial} {}
+
+    RowSIterator<Number, Rows, Cols> begin() {
+        return RowSIterator(_matrix, 0);
+    }
+
+    RowSIterator<Number, Rows, Cols> end() {
+        return RowSIterator(_matrix, Rows);
+    }
+};
+
+template<class Number, std::size_t Rows, std::size_t Cols>
+class RowSIterator {
+private:
+    Matrix<Number, Rows, Cols>& _matrix;
+    std::size_t _idx;
+public:
+    RowSIterator(Matrix<Number, Rows, Cols>& initial, std::size_t idx):
+        _idx{idx},
+        _matrix{initial} {}
+        
+    RowSIterator<Number, Rows, Cols> operator++() {
+        _idx += 1;
+        return *this;
+    }
+
+    bool operator!=(RowSIterator other) {
+        return _idx != other._idx;
+    }
+
+    Row<Number, Rows, Cols> operator*() const {
+        return _matrix.row(_idx);
+    }
+};
+
+
+
+
 
 
 
@@ -153,6 +218,10 @@ public:
 
     ColumnS<Number, Rows, Cols> columns() {
         return ColumnS(*this);
+    }
+
+    RowS<Number, Rows, Cols> rows() {
+        return RowS(*this);
     }
 };
 
@@ -328,7 +397,18 @@ int main() {
         std::cout << '\n';
     }
 
-    // for (auto [first, second] : zip(lol.row(1), lol.row(2))) {
-    //     std::cout << first << ' ' << second << '\n';
-    // }
+    *lol.row(2).begin() = 1337;
+
+    std::cout << "\n\n";
+
+    for (auto row : lol.rows()) {
+        for (auto& elem : row) {
+            std::cout << elem << ' ';
+        }
+        std::cout << '\n';
+    }
+
+    for (auto [first, second] : zip(lol.row(1), lol.row(2))) {
+        std::cout << first << ' ' << second << '\n';
+    }
 }
