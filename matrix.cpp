@@ -1,73 +1,9 @@
 #include <array>
 #include <stdexcept>
+#include <tuple>
+#include <algorithm>
 
-
-template<class T>
-concept Rangeable = requires(T val) {
-    val.begin();
-    val.end();
-};
-
-
-template<class T>
-concept Iterable = requires(T val) {
-    *val;
-    ++val;
-    val != val;
-};
-
-template<class Range, class Iterator> requires Rangeable<Range> && Iterable<Iterator>
-class ZippedIterator {
-private:
-    Iterator _first;
-    Iterator _second;
-public:
-    ZippedIterator(Iterator first, Iterator second):
-        _first{first}, 
-        _second{second} {}
-
-    ZippedIterator<Range, Iterator> operator++() {
-        ++_first;
-        ++_second;
-        return *this;
-    }
-
-    bool operator!=(ZippedIterator<Range, Iterator> other) {
-        return *this != other;
-    }
-
-    template<class Storaged>
-    const std::tuple<Storaged, Storaged>& operator*() {
-        return std::tuple{*_first, *_second};
-    }
-};
-
-template<class Range> requires Rangeable<Range>
-class ZippedRange {
-private:
-    Range _first;
-    Range _second;
-public:
-    ZippedRange(Range first, Range second):
-        _first{first},
-        _second{second} {}
-    
-    template<class Iterator> requires Iterable<Iterator>
-    ZippedIterator<Range, Iterator> begin() {
-        return ZippedIterator<Range, Iterator>(_first.begin(), _second.begin());
-    }
-
-    template<class Iterator> requires Iterable<Iterator>
-    ZippedIterator<Range, Iterator> end() {
-        return ZippedIterator<Range, Iterator>(_first.end(), _second.end());
-    }
-};
-
-template<class Range> requires Rangeable<Range>
-ZippedRange<Range> zip(Range first, Range second) {
-    return ZippedRange<Range>(first, second);
-}
-
+#include <valarray>
 
 
 
@@ -81,53 +17,48 @@ template<class Number, std::size_t Rows, std::size_t Cols>
 class Matrix;
 
 template<class Number, std::size_t Rows, std::size_t Cols>
-class ColumnSIterator;
+class ColumnListIterator;
 
 template<class Number, std::size_t Rows, std::size_t Cols>
-class RowSIterator;
-
-
-
-
-
+class RowListIterator;
 
 
 
 
 
 template<class Number, std::size_t Rows, std::size_t Cols>
-class ColumnS {
+class ColumnList {
 private:
     Matrix<Number, Rows, Cols>& _matrix;
 public:
-    ColumnS(Matrix<Number, Rows, Cols>& initial):
+    ColumnList(Matrix<Number, Rows, Cols>& initial):
         _matrix{initial} {}
 
-    ColumnSIterator<Number, Rows, Cols> begin() {
-        return ColumnSIterator(_matrix, 0);
+    ColumnListIterator<Number, Rows, Cols> begin() {
+        return ColumnListIterator(_matrix, 0);
     }
 
-    ColumnSIterator<Number, Rows, Cols> end() {
-        return ColumnSIterator(_matrix, Cols);
+    ColumnListIterator<Number, Rows, Cols> end() {
+        return ColumnListIterator(_matrix, Cols);
     }
 };
 
 template<class Number, std::size_t Rows, std::size_t Cols>
-class ColumnSIterator {
+class ColumnListIterator {
 private:
     Matrix<Number, Rows, Cols>& _matrix;
     std::size_t _idx;
 public:
-    ColumnSIterator(Matrix<Number, Rows, Cols>& initial, std::size_t idx):
+    ColumnListIterator(Matrix<Number, Rows, Cols>& initial, std::size_t idx):
         _idx{idx},
         _matrix{initial} {}
         
-    ColumnSIterator<Number, Rows, Cols> operator++() {
+    ColumnListIterator<Number, Rows, Cols> operator++() {
         _idx += 1;
         return *this;
     }
 
-    bool operator!=(ColumnSIterator other) {
+    bool operator!=(ColumnListIterator other) {
         return _idx != other._idx;
     }
 
@@ -140,38 +71,38 @@ public:
 
 
 template<class Number, std::size_t Rows, std::size_t Cols>
-class RowS {
+class RowList {
 private:
     Matrix<Number, Rows, Cols>& _matrix;
 public:
-    RowS(Matrix<Number, Rows, Cols>& initial):
+    RowList(Matrix<Number, Rows, Cols>& initial):
         _matrix{initial} {}
 
-    RowSIterator<Number, Rows, Cols> begin() {
-        return RowSIterator(_matrix, 0);
+    RowListIterator<Number, Rows, Cols> begin() {
+        return RowListIterator(_matrix, 0);
     }
 
-    RowSIterator<Number, Rows, Cols> end() {
-        return RowSIterator(_matrix, Rows);
+    RowListIterator<Number, Rows, Cols> end() {
+        return RowListIterator(_matrix, Rows);
     }
 };
 
 template<class Number, std::size_t Rows, std::size_t Cols>
-class RowSIterator {
+class RowListIterator {
 private:
     Matrix<Number, Rows, Cols>& _matrix;
     std::size_t _idx;
 public:
-    RowSIterator(Matrix<Number, Rows, Cols>& initial, std::size_t idx):
+    RowListIterator(Matrix<Number, Rows, Cols>& initial, std::size_t idx):
         _idx{idx},
         _matrix{initial} {}
         
-    RowSIterator<Number, Rows, Cols> operator++() {
+    RowListIterator<Number, Rows, Cols> operator++() {
         _idx += 1;
         return *this;
     }
 
-    bool operator!=(RowSIterator other) {
+    bool operator!=(RowListIterator other) {
         return _idx != other._idx;
     }
 
@@ -193,13 +124,11 @@ class Matrix {
 private:
     typename std::array<Number, Rows * Cols> storage;
 public:
-    Matrix() {
-        storage.fill(0);
-    }
+    Matrix(){}
 
     Matrix(std::array<Number, Rows * Cols> initial):
         storage{initial} {}
-
+    
     typename std::array<Number, Rows * Cols>::iterator begin() {
         return storage.begin();
     }
@@ -216,12 +145,47 @@ public:
         return Row(*this, idx);
     }
 
-    ColumnS<Number, Rows, Cols> columns() {
-        return ColumnS(*this);
+    ColumnList<Number, Rows, Cols> columns() {
+        return ColumnList(*this);
     }
 
-    RowS<Number, Rows, Cols> rows() {
-        return RowS(*this);
+    RowList<Number, Rows, Cols> rows() {
+        return RowList(*this);
+    }
+
+    Matrix<Number, Rows, Cols> operator-() {
+        Matrix<Number, Rows, Cols> result;
+        std::transform(begin(), end(), result.begin(), [](Number elem) {return -elem;});
+        return result;
+    }
+
+    void operator+=(Number val) {
+        std::transform(begin(), end(), begin(), [val](Number elem) {return elem + val;});
+    }
+
+    void operator-=(Number val) {
+        std::transform(begin(), end(), begin(), [val](Number elem) {return elem - val;});
+    }
+
+    Matrix<Number, Rows, Cols> operator+(Number val) {
+        Matrix<Number, Rows, Cols> result = *this;
+        std::transform(begin(), end(), result.begin(), [val](Number elem) {return elem + val;});
+    }
+
+    void operator+=(Matrix<Number, Rows, Cols>& other) {
+        std::transform(begin(), end(), other.begin(), begin(), std::plus<>{});
+    }
+
+    void operator-=(Matrix<Number, Rows, Cols>& other) {
+        std::transform(begin(), end(), other.begin(), begin(), std::minus<>{});
+    }
+
+    Matrix<Number, Rows, Cols> operator+(Matrix<Number, Rows, Cols> other) {
+        return other += *this;
+    }
+
+    Matrix<Number, Rows, Cols> operator-(Matrix<Number, Rows, Cols> other) {
+        return other += *this;
     }
 };
 
@@ -256,10 +220,7 @@ public:
 
     std::array<Number, Rows> copy() {
         std::array<Number, Rows> result;
-        auto resultIterator = result.begin();
-        for (auto i : *this) {
-            *resultIterator++ = i;
-        }
+        std::copy(begin(), end(), result.begin());
         return result;
     }
 };
@@ -323,11 +284,10 @@ public:
         return RowIterator<Number, Rows, Cols>(_end);
     }
 
-    std::array<Number, Rows> copy() {
-        std::array<Number, Rows> result;
-        auto resultIterator = result.begin();
-        for (auto i : *this) {
-            *resultIterator++ = i;
+    std::array<Number, Cols> copy() {
+        std::array<Number, Cols> result;
+        for (auto iter = result.begin(); auto& elem : *this) {
+            *iter++ = elem;
         }
         return result;
     }
@@ -361,54 +321,26 @@ public:
 
 
 
+
 #include <iostream>
 
 int main() {
-    Matrix<int, 2, 3> lol({
-        1, 2, 3,
-        4, 5, 6
+    Matrix<int, 2, 3> m({
+        3, 4, 7,
+        1, 2, 3
     });
-    auto c = lol.column(2).copy();
-    for (auto& i : c) {
-        std::cout << i << '\n';
-    }
 
-    auto r = lol.row(0);
-    for (auto& i : r) {
+    auto c = m.row(1).copy();
+    for (auto& i : c) {
         std::cout << i << ' ';
     }
 
-    std::cout << "\n\n";
-    for (auto column : lol.columns()) {
-        for (auto elem : column) {
+    m = -m;
+
+    for (auto row : m.rows()) {
+        for (auto elem : row) {
             std::cout << elem << ' ';
         }
         std::cout << '\n';
-    }
-
-    *lol.row(1).begin() = 7; 
-
-    std::cout << '\n';
-
-    for (auto column : lol.columns()) {
-        for (auto elem : column) {
-            std::cout << elem << ' ';
-        }
-        std::cout << '\n';
-    }
-
-    *lol.row(2).begin() = 1337;
-
-    std::cout << "\n\n";
-
-    for (auto row : lol.rows()) {
-        for (auto& elem : row) {
-            std::cout << elem << ' ';
-        }
-        std::cout << '\n';
-    }
-
-    for (auto [first, second] : zip(lol.row(1), lol.row(2))) {
-        std::cout << first << ' ' << second << '\n';
     }
 }
