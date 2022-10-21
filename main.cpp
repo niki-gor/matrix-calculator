@@ -8,14 +8,14 @@ int main() {
         1, 2, 3
     });
 
-    auto c = m.row(1).copy();
-    for (auto& i : c) {
-        std::cout << i << ' ';
-    }
+    Matrix<int, 3, 1> n({
+        5,
+        8,
+        1
+    });
 
-    m = -m;
-
-    for (auto row : m.rows()) {
+    auto res = m * n;
+    for (auto row : res.rows()) {
         for (auto elem : row) {
             std::cout << elem << ' ';
         }

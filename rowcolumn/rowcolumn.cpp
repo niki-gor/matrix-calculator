@@ -1,5 +1,7 @@
 #pragma once
 
+#include <numeric>
+
 #include "rowcolumn.hpp"
 
 
@@ -99,4 +101,10 @@ std::array<Number, Cols> Row<Number, Rows, Cols>::copy() {
     std::array<Number, Cols> result;
     std::transform(begin(), end(), result.begin(), [](Number elem) {return elem;});
     return result;
+}
+
+template<class Number, std::size_t Rows, std::size_t Cols>
+template<std::size_t SecondCols>
+Number Row<Number, Rows, Cols>::operator*(Column<Number, Cols, SecondCols> other) {
+    return std::inner_product(begin(), end(), other.begin(), 0);
 }

@@ -35,9 +35,17 @@ public:
 
     void operator-=(Number val);
 
+    void operator*=(Number val);
+
+    void operator/=(Number val);
+
     Matrix<Number, Rows, Cols> operator+(Number val);
 
     Matrix<Number, Rows, Cols> operator-(Number val);
+
+    Matrix<Number, Rows, Cols> operator*(Number val);
+
+    Matrix<Number, Rows, Cols> operator/(Number val);
 
     void operator+=(Matrix<Number, Rows, Cols>& other);
 
@@ -46,6 +54,9 @@ public:
     Matrix<Number, Rows, Cols> operator+(Matrix<Number, Rows, Cols> other);
 
     Matrix<Number, Rows, Cols> operator-(Matrix<Number, Rows, Cols> other);
+
+    template<std::size_t SecondCols>
+    Matrix<Number, Rows, SecondCols> operator*(Matrix<Number, Cols, SecondCols>& other);
 };
 
 

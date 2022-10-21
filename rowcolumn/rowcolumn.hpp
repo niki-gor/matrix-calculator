@@ -37,13 +37,6 @@ public:
 };
 
 
-
-
-
-
-
-
-
 template<class Number, std::size_t Rows, std::size_t Cols>
 class RowIterator {
 private:
@@ -73,6 +66,9 @@ public:
     RowIterator<Number, Rows, Cols> end();
 
     std::array<Number, Cols> copy();
+
+    template<std::size_t SecondCols>
+    Number operator*(Column<Number, Cols, SecondCols> other);
 };
 
 

@@ -21,7 +21,7 @@ bool ColumnListIterator<Number, Rows, Cols>::operator!=(ColumnListIterator other
 
 template<class Number, std::size_t Rows, std::size_t Cols>
 Column<Number, Rows, Cols> ColumnListIterator<Number, Rows, Cols>::operator*() const {
-    return _matrix.column(_idx);
+    return Column<Number, Rows, Cols>(_matrix, _idx);
 }
 
 
@@ -31,19 +31,19 @@ ColumnList<Number, Rows, Cols>::ColumnList(typename std::array<Number, Rows * Co
 
 template<class Number, std::size_t Rows, std::size_t Cols>
 ColumnListIterator<Number, Rows, Cols> ColumnList<Number, Rows, Cols>::begin() {
-    return ColumnListIterator(_matrix, 0);
+    return ColumnListIterator<Number, Rows, Cols>(_matrix, 0);
 }
 
 template<class Number, std::size_t Rows, std::size_t Cols>
 ColumnListIterator<Number, Rows, Cols> ColumnList<Number, Rows, Cols>::end() {
-    return ColumnListIterator(_matrix, Cols);
+    return ColumnListIterator<Number, Rows, Cols>(_matrix, Cols);
 }
 
 
 template<class Number, std::size_t Rows, std::size_t Cols>
 RowListIterator<Number, Rows, Cols>::RowListIterator(typename std::array<Number, Rows * Cols>& initial, std::size_t idx):
-    _idx{idx},
-    _matrix{initial} {}
+    _matrix{initial},
+    _idx{idx} {}
 
 template<class Number, std::size_t Rows, std::size_t Cols>    
 RowListIterator<Number, Rows, Cols> RowListIterator<Number, Rows, Cols>::operator++() {

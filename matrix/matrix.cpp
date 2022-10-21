@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 #include "matrix.hpp"
 
 
@@ -58,15 +60,41 @@ void Matrix<Number, Rows, Cols>::operator-=(Number val) {
 }
 
 template<class Number, std::size_t Rows, std::size_t Cols>
+void Matrix<Number, Rows, Cols>::operator*=(Number val) {
+    std::transform(begin(), end(), begin(), [val](Number elem) {return elem * val;});
+}
+
+template<class Number, std::size_t Rows, std::size_t Cols>
+void Matrix<Number, Rows, Cols>::operator/=(Number val) {
+    std::transform(begin(), end(), begin(), [val](Number elem) {return elem / val;});
+}
+
+template<class Number, std::size_t Rows, std::size_t Cols>
 Matrix<Number, Rows, Cols> Matrix<Number, Rows, Cols>::operator+(Number val) {
-    Matrix<Number, Rows, Cols> result = *this;
+    Matrix<Number, Rows, Cols> result;
     std::transform(begin(), end(), result.begin(), [val](Number elem) {return elem + val;});
+    return result;
 }
 
 template<class Number, std::size_t Rows, std::size_t Cols>
 Matrix<Number, Rows, Cols> Matrix<Number, Rows, Cols>::operator-(Number val) {
-    Matrix<Number, Rows, Cols> result = *this;
+    Matrix<Number, Rows, Cols> result;
     std::transform(begin(), end(), result.begin(), [val](Number elem) {return elem - val;});
+    return result;
+}
+
+template<class Number, std::size_t Rows, std::size_t Cols>
+Matrix<Number, Rows, Cols> Matrix<Number, Rows, Cols>::operator*(Number val) {
+    Matrix<Number, Rows, Cols> result;
+    std::transform(begin(), end(), result.begin(), [val](Number elem) {return elem * val;});
+    return result;
+}
+
+template<class Number, std::size_t Rows, std::size_t Cols>
+Matrix<Number, Rows, Cols> Matrix<Number, Rows, Cols>::operator/(Number val) {
+    Matrix<Number, Rows, Cols> result;
+    std::transform(begin(), end(), result.begin(), [val](Number elem) {return elem / val;});
+    return result;
 }
 
 template<class Number, std::size_t Rows, std::size_t Cols>
@@ -87,4 +115,17 @@ Matrix<Number, Rows, Cols> Matrix<Number, Rows, Cols>::operator+(Matrix<Number, 
 template<class Number, std::size_t Rows, std::size_t Cols>
 Matrix<Number, Rows, Cols> Matrix<Number, Rows, Cols>::operator-(Matrix<Number, Rows, Cols> other) {
     return other -= *this;
+}
+
+template<class Number, std::size_t Rows, std::size_t Cols>
+template<std::size_t SecondCols>
+Matrix<Number, Rows, SecondCols> Matrix<Number, Rows, Cols>::operator*(Matrix<Number, Cols, SecondCols>& other) {
+    Matrix<Number, Rows, SecondCols> result;
+    auto iter = result.begin();
+    for (auto row : rows()) {
+        for (auto column : other.columns()) {
+            *iter++ = row * column;
+        }
+    }
+    return result;
 }
