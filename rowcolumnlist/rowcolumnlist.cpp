@@ -5,8 +5,8 @@
 
 template<class Number, std::size_t Rows, std::size_t Cols>
 ColumnListIterator<Number, Rows, Cols>::ColumnListIterator(typename std::array<Number, Rows * Cols>& initial, std::size_t idx):
-    _idx{idx},
-    _matrix{initial} {}
+    _matrix{initial},
+    _idx{idx} {}
 
 template<class Number, std::size_t Rows, std::size_t Cols>    
 ColumnListIterator<Number, Rows, Cols> ColumnListIterator<Number, Rows, Cols>::operator++() {
