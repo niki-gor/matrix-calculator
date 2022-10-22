@@ -125,12 +125,28 @@ template<class Number, std::size_t Rows, std::size_t Cols>
 template<std::size_t SecondCols>
 Matrix<Number, Rows, SecondCols> Matrix<Number, Rows, Cols>::operator*(Matrix<Number, Cols, SecondCols>& other) {
     Matrix<Number, Rows, SecondCols> result;
-    SliceIterator<Number> iter = result.begin();
-    for (Slice<Number, Cols> row : rows()) {
-        for (Slice<Number, Cols> column : other.columns()) {
+    auto iter = result.begin();
+    for (auto row : rows()) {
+        for (auto column : other.columns()) {
             *iter = row * column;
             ++iter;
         }
     }
     return result;
+}
+
+template<class Number, std::size_t Rows, std::size_t Cols>
+Matrix<Number, Cols, Rows> Matrix<Number, Rows, Cols>::transposed() {
+    Matrix<Number, Cols, Rows> result;
+    auto row = result.rows().begin();
+    for (auto col : columns()) {
+        std::transform(col.begin(), col.end(), (*row).begin(), [](Number elem) {return elem;});
+        ++row;
+    }
+    return result;
+}
+
+template<class Number, std::size_t Rows, std::size_t Cols>
+Slice<Number, Cols> Matrix<Number, Rows, Cols>::operator[](std::size_t row_idx) {
+    return row(row_idx);
 }

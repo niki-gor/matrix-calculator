@@ -44,3 +44,18 @@ template<class Number, std::size_t Len>
 Number Slice<Number, Len>::operator*(Slice<Number, Len> other) {
     return std::inner_product(begin(), end(), other.begin(), 0);
 }
+
+template<class Number, std::size_t Len>
+void Slice<Number, Len>::operator+=(Slice<Number, Len> other) {
+    std::transform(begin(), end(), other.begin(), begin(), std::plus<>{});
+}
+
+template<class Number, std::size_t Len>
+void Slice<Number, Len>::operator-=(Slice<Number, Len> other) {
+    std::transform(begin(), end(), other.begin(), begin(), std::minus<>{});
+}
+
+template<class Number, std::size_t Len>
+Number& Slice<Number, Len>::operator[](std::size_t idx) {
+    return _begin[idx];
+}

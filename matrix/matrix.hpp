@@ -25,6 +25,8 @@ public:
 
     Slice<Number, Cols> row(std::size_t idx);
 
+    Slice<Number, Cols> operator[](std::size_t idx);
+
     Generator<Slice<Number, Rows>, Cols> columns();
 
     Generator<Slice<Number, Cols>, Rows> rows();
@@ -57,6 +59,8 @@ public:
 
     template<std::size_t SecondCols>
     Matrix<Number, Rows, SecondCols> operator*(Matrix<Number, Cols, SecondCols>& other);
+
+    Matrix<Number, Cols, Rows> transposed();
 };
 
 

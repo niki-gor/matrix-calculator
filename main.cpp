@@ -2,11 +2,29 @@
 
 #include "matrix.hpp"
 
+
 int main() {
     Matrix<int, 2, 3> m({
         3, 4, 7,
         1, 2, 3
     });
+
+    m[0][1] -= m[1][2];
+
+    for (auto row: m.rows()) {
+        for (auto elem : row)
+            std::cout << elem << ' ';
+        std::cout << '\n';
+    }
+
+    auto t = m.transposed();
+
+    for (auto row : t.rows()) {
+        for (auto elem : row) {
+            std::cout << elem << ' ';
+        }
+        std::cout << '\n';
+    }
 
     Matrix<int, 3, 1> n({
         5,

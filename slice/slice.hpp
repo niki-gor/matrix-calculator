@@ -35,6 +35,14 @@ public:
     SliceIterator<Number> end();
 
     Number operator*(Slice<Number, Len> other);
+
+    void operator+=(Slice<Number, Len> other);
+
+    void operator-=(Slice<Number, Len> other);
+
+    void operator*=(Number val);
+
+    Number& operator[](std::size_t idx);
 };
 
 
