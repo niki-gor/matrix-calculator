@@ -1,4 +1,4 @@
-project(rowcolumn)
+project(generator)
 
 file(GLOB SOURCES "*.cpp")
 add_library(${PROJECT_NAME} ${SOURCES})

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "matrix/matrix.hpp"
+#include "matrix.hpp"
 
 int main() {
     Matrix<int, 2, 3> m({
@@ -14,11 +14,22 @@ int main() {
         1
     });
 
-    auto res = m * n;
+    auto res = m * n * 7;
+    res += res;
+
+    *res.row(1).begin() = 1;
+
     for (auto row : res.rows()) {
-        for (auto elem : row) {
+        for (auto& elem : row) {
             std::cout << elem << ' ';
+            elem = 777;
         }
         std::cout << '\n';
+    }
+
+    for (auto col : res.columns()) {
+        for (auto elem :col) {
+            std::cout << elem;
+        }
     }
 }

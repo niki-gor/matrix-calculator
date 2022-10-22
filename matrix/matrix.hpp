@@ -4,30 +4,30 @@
 #include <stdexcept>
 #include <algorithm>
 
-#include "rowcolumn.hpp"
-#include "rowcolumnlist.hpp"
+#include "slice.hpp"
+#include "generator.hpp"
 
 
 template<class Number, std::size_t Rows, std::size_t Cols>
 class Matrix {
 private:
-    typename std::array<Number, Rows * Cols> storage;
+    typename std::array<Number, Rows * Cols> _storage;
 public:
     Matrix();
 
     Matrix(std::array<Number, Rows * Cols> initial);
     
-    typename std::array<Number, Rows * Cols>::iterator begin();
+    SliceIterator<Number> begin();
 
-    typename std::array<Number, Rows * Cols>::iterator end();
+    SliceIterator<Number> end();
 
-    Column<Number, Rows, Cols> column(std::size_t idx);
+    Slice<Number, Rows> column(std::size_t idx);
 
-    Row<Number, Rows, Cols> row(std::size_t idx);
+    Slice<Number, Cols> row(std::size_t idx);
 
-    ColumnList<Number, Rows, Cols> columns();
+    Generator<Slice<Number, Rows>, Cols> columns();
 
-    RowList<Number, Rows, Cols> rows();
+    Generator<Slice<Number, Cols>, Rows> rows();
 
     Matrix<Number, Rows, Cols> operator-();
 

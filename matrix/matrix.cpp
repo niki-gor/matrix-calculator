@@ -10,36 +10,40 @@ Matrix<Number, Rows, Cols>::Matrix(){}
 
 template<class Number, std::size_t Rows, std::size_t Cols>
 Matrix<Number, Rows, Cols>::Matrix(std::array<Number, Rows * Cols> initial):
-    storage{initial} {}
+    _storage{initial} {}
 
 template<class Number, std::size_t Rows, std::size_t Cols>
-typename std::array<Number, Rows * Cols>::iterator Matrix<Number, Rows, Cols>::begin() {
-    return storage.begin();
+SliceIterator<Number> Matrix<Number, Rows, Cols>::begin() {
+    return SliceIterator<Number>(_storage.begin(), 1);
 }
 
 template<class Number, std::size_t Rows, std::size_t Cols>
-typename std::array<Number, Rows * Cols>::iterator Matrix<Number, Rows, Cols>::end() {
-    return storage.end();
+SliceIterator<Number> Matrix<Number, Rows, Cols>::end() {
+    return SliceIterator<Number>(_storage.end(), 1);
 }
 
 template<class Number, std::size_t Rows, std::size_t Cols>
-Column<Number, Rows, Cols> Matrix<Number, Rows, Cols>::column(std::size_t idx) {
-    return Column<Number, Rows, Cols>(storage, idx);
+Slice<Number, Rows> Matrix<Number, Rows, Cols>::column(std::size_t idx) {
+    return Slice<Number, Rows>(_storage.begin() + idx, Cols);
 }
 
 template<class Number, std::size_t Rows, std::size_t Cols>
-Row<Number, Rows, Cols> Matrix<Number, Rows, Cols>::row(std::size_t idx) {
-    return Row<Number, Rows, Cols>(storage, idx);
+Slice<Number, Cols> Matrix<Number, Rows, Cols>::row(std::size_t idx) {
+    return Slice<Number, Cols>(_storage.begin() + Cols * idx, 1);
 }
 
 template<class Number, std::size_t Rows, std::size_t Cols>
-ColumnList<Number, Rows, Cols> Matrix<Number, Rows, Cols>::columns() {
-    return ColumnList<Number, Rows, Cols>(storage);
+Generator<Slice<Number, Rows>, Cols> Matrix<Number, Rows, Cols>::columns() {
+    return Generator<Slice<Number, Rows>, Cols>([this](std::size_t idx) {
+        return Slice<Number, Rows>(_storage.begin() + idx, Cols);
+    });
 }
 
 template<class Number, std::size_t Rows, std::size_t Cols>
-RowList<Number, Rows, Cols> Matrix<Number, Rows, Cols>::rows() {
-    return RowList<Number, Rows, Cols>(storage);
+Generator<Slice<Number, Cols>, Rows> Matrix<Number, Rows, Cols>::rows() {
+    return Generator<Slice<Number, Cols>, Rows>([this](std::size_t idx) {
+        return Slice<Number, Cols>(_storage.begin() + idx * Cols, 1);
+    });
 }
 
 template<class Number, std::size_t Rows, std::size_t Cols>
@@ -121,10 +125,11 @@ template<class Number, std::size_t Rows, std::size_t Cols>
 template<std::size_t SecondCols>
 Matrix<Number, Rows, SecondCols> Matrix<Number, Rows, Cols>::operator*(Matrix<Number, Cols, SecondCols>& other) {
     Matrix<Number, Rows, SecondCols> result;
-    auto iter = result.begin();
-    for (auto row : rows()) {
-        for (auto column : other.columns()) {
-            *iter++ = row * column;
+    SliceIterator<Number> iter = result.begin();
+    for (Slice<Number, Cols> row : rows()) {
+        for (Slice<Number, Cols> column : other.columns()) {
+            *iter = row * column;
+            ++iter;
         }
     }
     return result;
