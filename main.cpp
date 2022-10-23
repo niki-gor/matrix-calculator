@@ -11,6 +11,10 @@ int main() {
 
     m[0][1] -= m[1][2];
 
+    Matrix<int, 2, 2> mm({2, 3, 77, 15});
+
+    std::cout << det(mm) << '\n';
+
     for (auto row: m.rows()) {
         for (auto elem : row)
             std::cout << elem << ' ';

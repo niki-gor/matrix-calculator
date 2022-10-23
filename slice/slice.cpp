@@ -15,8 +15,13 @@ SliceIterator<Number> SliceIterator<Number>::operator++() {
 }
 
 template<class Number>
-bool SliceIterator<Number>::operator!=(SliceIterator<Number> other) {
-    return _iterator != other._iterator;
+SliceIterator<Number> SliceIterator<Number>::operator+(std::size_t shift) {
+    return SliceIterator<Number>(_iterator + _step * shift, _step);
+}
+
+template<class Number>
+bool SliceIterator<Number>::operator==(SliceIterator<Number> other) {
+    return _iterator == other._iterator;
 }
 
 template<class Number>
@@ -53,6 +58,16 @@ void Slice<Number, Len>::operator+=(Slice<Number, Len> other) {
 template<class Number, std::size_t Len>
 void Slice<Number, Len>::operator-=(Slice<Number, Len> other) {
     std::transform(begin(), end(), other.begin(), begin(), std::minus<>{});
+}
+
+template<class Number, std::size_t Len>
+void Slice<Number, Len>::operator*=(Number val) {
+    std::transform(begin(), end(), begin(), [val](Number elem) {return elem * val;});
+}
+
+template<class Number, std::size_t Len>
+void Slice<Number, Len>::operator/=(Number val) {
+    std::transform(begin(), end(), begin(), [val](Number elem) {return elem / val;});
 }
 
 template<class Number, std::size_t Len>

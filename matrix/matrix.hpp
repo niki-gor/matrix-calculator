@@ -61,7 +61,13 @@ public:
     Matrix<Number, Rows, SecondCols> operator*(Matrix<Number, Cols, SecondCols>& other);
 
     Matrix<Number, Cols, Rows> transposed();
+
+    Slice<Number, std::min(Rows, Cols)> main_diagonal();
 };
+
+
+template<class Number, std::size_t N>
+double det(Matrix<Number, N, N>& m);
 
 
 #include "matrix.cpp"

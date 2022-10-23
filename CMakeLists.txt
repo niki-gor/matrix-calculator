@@ -9,4 +9,4 @@ add_subdirectory(generator)
 add_subdirectory(slice)
 add_subdirectory(matrix)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC generator slice matrix)
+target_link_libraries(${PROJECT_NAME} PUBLIC matrix)

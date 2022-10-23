@@ -18,8 +18,14 @@ GeneratorIterator<Number> GeneratorIterator<Number>::operator++() {
 }
 
 template<class Number>
-bool GeneratorIterator<Number>::operator!=(GeneratorIterator<Number> other) {
-    return _index != other._index;
+GeneratorIterator<Number> GeneratorIterator<Number>::operator+(std::size_t shift) {
+    return GeneratorIterator<Number>(_generator, _index + shift);
+}
+
+
+template<class Number>
+bool GeneratorIterator<Number>::operator==(GeneratorIterator<Number> other) {
+    return _index == other._index;
 }
 
 template<class Number>

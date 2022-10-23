@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <iostream>
 
 #include "matrix.hpp"
 
@@ -147,6 +148,40 @@ Matrix<Number, Cols, Rows> Matrix<Number, Rows, Cols>::transposed() {
 }
 
 template<class Number, std::size_t Rows, std::size_t Cols>
+Slice<Number, std::min(Rows, Cols)> Matrix<Number, Rows, Cols>::main_diagonal() {
+    return Slice<Number, std::min(Rows, Cols)>(_storage.begin(), Cols + 1);
+}
+
+template<class Number, std::size_t Rows, std::size_t Cols>
 Slice<Number, Cols> Matrix<Number, Rows, Cols>::operator[](std::size_t row_idx) {
     return row(row_idx);
+}
+
+template<class Number, std::size_t N>
+double det(Matrix<Number, N, N>& m) {
+    std::array<double, N * N> storage;
+    std::transform(m.begin(), m.end(), storage.begin(), [](Number val) {return double(val);});
+    Matrix<double, N, N> matrix(storage);
+
+    auto rows = matrix.rows();
+    for (std::size_t idx = 0; idx < N; ++idx) {
+        auto row = rows.begin() + idx;
+        auto not_null_row = row;
+        while (not_null_row != rows.end() && (*not_null_row)[idx] == 0) {
+            ++not_null_row;
+        }
+        if (not_null_row == rows.end()) {
+            return 0;
+        }
+        std::swap_ranges((*row).begin(), (*row).end(), (*not_null_row).begin());
+        auto make_null_row = row;
+        for (++make_null_row; make_null_row != rows.end(); ++make_null_row) {
+            double k = (*make_null_row)[idx] / (*row)[idx];
+            std::transform((*make_null_row).begin(), (*make_null_row).end(), (*row).begin(), (*make_null_row).begin(), [k](Number origin, Number sub) {
+                return origin - sub * k;
+            });
+        }
+    }
+    auto diagonal = matrix.main_diagonal();
+    return std::accumulate(diagonal.begin(), diagonal.end(), 1.0, std::multiplies<double>());
 }

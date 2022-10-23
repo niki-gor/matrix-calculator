@@ -15,7 +15,9 @@ public:
 
     SliceIterator<Number> operator++();
 
-    bool operator!=(SliceIterator<Number> other);
+    SliceIterator<Number> operator+(std::size_t shift);
+
+    bool operator==(SliceIterator<Number> other);
 
     Number& operator*() const;
 };
@@ -41,6 +43,8 @@ public:
     void operator-=(Slice<Number, Len> other);
 
     void operator*=(Number val);
+
+    void operator/=(Number val);
 
     Number& operator[](std::size_t idx);
 };

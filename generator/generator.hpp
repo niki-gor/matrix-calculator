@@ -14,7 +14,9 @@ public:
 
     GeneratorIterator<Number> operator++();
 
-    bool operator!=(GeneratorIterator<Number> other);
+    GeneratorIterator<Number> operator+(std::size_t shift);
+
+    bool operator==(GeneratorIterator<Number> other);
 
     Number operator*() const;
 };
