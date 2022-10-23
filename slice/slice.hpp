@@ -7,7 +7,7 @@
 
 template<class Number>
 class SliceIterator {
-protected:
+private:
     Number* _iterator;
     std::size_t _step;
 public:
