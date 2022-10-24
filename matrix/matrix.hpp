@@ -16,6 +16,10 @@ public:
     Matrix();
 
     Matrix(std::array<Number, Rows * Cols> initial);
+
+    Matrix(const Matrix<Number, Rows, Cols>& other);
+
+    bool operator==(Matrix<Number, Rows, Cols> other) const;
     
     SliceIterator<Number> begin();
 

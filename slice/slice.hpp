@@ -3,6 +3,7 @@
 #include <array>
 #include <numeric>
 #include <stdexcept>
+#include <algorithm>
 
 
 template<class Number>

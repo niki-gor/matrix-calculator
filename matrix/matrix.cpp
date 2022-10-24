@@ -1,8 +1,5 @@
 #pragma once
 
-#include <algorithm>
-#include <iostream>
-
 #include "matrix.hpp"
 
 
@@ -12,6 +9,15 @@ Matrix<Number, Rows, Cols>::Matrix(){}
 template<class Number, std::size_t Rows, std::size_t Cols>
 Matrix<Number, Rows, Cols>::Matrix(std::array<Number, Rows * Cols> initial):
     _storage{initial} {}
+
+template<class Number, std::size_t Rows, std::size_t Cols>
+Matrix<Number, Rows, Cols>::Matrix(const Matrix<Number, Rows, Cols>& other):
+    _storage{other._storage} {}
+
+template<class Number, std::size_t Rows, std::size_t Cols>
+bool Matrix<Number, Rows, Cols>::operator==(Matrix<Number, Rows, Cols> other) const {
+    return _storage == other._storage;
+}
 
 template<class Number, std::size_t Rows, std::size_t Cols>
 SliceIterator<Number> Matrix<Number, Rows, Cols>::begin() {
@@ -114,12 +120,14 @@ void Matrix<Number, Rows, Cols>::operator-=(Matrix<Number, Rows, Cols>& other) {
 
 template<class Number, std::size_t Rows, std::size_t Cols>
 Matrix<Number, Rows, Cols> Matrix<Number, Rows, Cols>::operator+(Matrix<Number, Rows, Cols> other) {
-    return other += *this;
+    std::transform(begin(), end(), other.begin(), other.begin(), std::plus<>{});
+    return other;
 }
 
 template<class Number, std::size_t Rows, std::size_t Cols>
 Matrix<Number, Rows, Cols> Matrix<Number, Rows, Cols>::operator-(Matrix<Number, Rows, Cols> other) {
-    return other -= *this;
+    std::transform(begin(), end(), other.begin(), other.begin(), std::minus<>{});
+    return other;
 }
 
 template<class Number, std::size_t Rows, std::size_t Cols>
@@ -177,11 +185,18 @@ double det(Matrix<Number, N, N>& m) {
         auto make_null_row = row;
         for (++make_null_row; make_null_row != rows.end(); ++make_null_row) {
             double k = (*make_null_row)[idx] / (*row)[idx];
-            std::transform((*make_null_row).begin(), (*make_null_row).end(), (*row).begin(), (*make_null_row).begin(), [k](Number origin, Number sub) {
-                return origin - sub * k;
-            });
+            *row *= k; //
+            *make_null_row -= *row;
+            *row /= k; // слегка кринж, знаю.
+            // для немодифицирующих операций (которые создают новые объекты), нужно выделять новую память —
+            // слайсы работают с уже выделенным участком памяти
         }
     }
     auto diagonal = matrix.main_diagonal();
+    for (auto row : matrix.rows()) {
+        for (auto elem : row) 
+            std::cout << elem << ' ';
+        std::cout << '\n';
+    }
     return std::accumulate(diagonal.begin(), diagonal.end(), 1.0, std::multiplies<double>());
 }
