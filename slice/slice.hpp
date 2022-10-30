@@ -4,6 +4,7 @@
 #include <numeric>
 #include <stdexcept>
 #include <algorithm>
+#include <memory>
 
 
 template<class Number>
@@ -27,10 +28,13 @@ public:
 template<class Number, std::size_t Len>
 class Slice {
 private:
+    std::shared_ptr<std::array<Number, Len>> _allocated;
     Number* _begin;
     std::size_t _step;
 
 public:
+    Slice();
+
     Slice(Number* start, std::size_t step);
     
     SliceIterator<Number> begin();
@@ -43,9 +47,27 @@ public:
 
     void operator-=(Slice<Number, Len> other);
 
+    void operator+=(Number val);
+
+    void operator-=(Number val);
+
     void operator*=(Number val);
 
     void operator/=(Number val);
+
+
+    Slice<Number, Len> operator+(Slice<Number, Len> other);
+
+    Slice<Number, Len> operator-(Slice<Number, Len> other);
+
+    Slice<Number, Len> operator+(Number val);
+
+    Slice<Number, Len> operator-(Number val);
+
+    Slice<Number, Len> operator*(Number val);
+
+    Slice<Number, Len> operator/(Number val);
+    
 
     Number& operator[](std::size_t idx);
 };

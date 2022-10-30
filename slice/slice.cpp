@@ -31,6 +31,12 @@ Number& SliceIterator<Number>::operator*() const {
 
 
 template<class Number, std::size_t Len>
+Slice<Number, Len>::Slice():
+    _allocated(std::make_shared<std::array<Number, Len>>()),
+    _begin{_allocated->begin()},
+    _step{1} {}
+
+template<class Number, std::size_t Len>
 Slice<Number, Len>::Slice(Number* begin, std::size_t step):
     _begin{begin},
     _step{step} {}
@@ -61,6 +67,16 @@ void Slice<Number, Len>::operator-=(Slice<Number, Len> other) {
 }
 
 template<class Number, std::size_t Len>
+void Slice<Number, Len>::operator+=(Number val) {
+    std::transform(begin(), end(), begin(), [val](Number elem) {return elem + val;});
+}
+
+template<class Number, std::size_t Len>
+void Slice<Number, Len>::operator-=(Number val) {
+    std::transform(begin(), end(), begin(), [val](Number elem) {return elem - val;});
+}
+
+template<class Number, std::size_t Len>
 void Slice<Number, Len>::operator*=(Number val) {
     std::transform(begin(), end(), begin(), [val](Number elem) {return elem * val;});
 }
@@ -69,6 +85,50 @@ template<class Number, std::size_t Len>
 void Slice<Number, Len>::operator/=(Number val) {
     std::transform(begin(), end(), begin(), [val](Number elem) {return elem / val;});
 }
+
+
+template<class Number, std::size_t Len>
+Slice<Number, Len> Slice<Number, Len>::operator+(Slice<Number, Len> other) {
+    Slice<Number, Len> result;
+    std::transform(begin(), end(), other.begin(), result.begin(), std::plus<>{});
+    return result;
+}
+
+template<class Number, std::size_t Len>
+Slice<Number, Len> Slice<Number, Len>::operator-(Slice<Number, Len> other) {
+    Slice<Number, Len> result;
+    std::transform(begin(), end(), other.begin(), result.begin(), std::minus<>{});
+    return result;
+}
+
+template<class Number, std::size_t Len>
+Slice<Number, Len> Slice<Number, Len>::operator+(Number val) {
+    Slice<Number, Len> result;
+    std::transform(begin(), end(), result.begin(), [val](Number elem) {return elem + val;});   
+    return result;
+}
+
+template<class Number, std::size_t Len>
+Slice<Number, Len> Slice<Number, Len>::operator-(Number val) {
+    Slice<Number, Len> result;
+    std::transform(begin(), end(), result.begin(), [val](Number elem) {return elem - val;});
+    return result;
+}
+
+template<class Number, std::size_t Len>
+Slice<Number, Len> Slice<Number, Len>::operator*(Number val) {
+    Slice<Number, Len> result;
+    std::transform(begin(), end(), result.begin(), [val](Number elem) {return elem * val;});
+    return result;
+}
+
+template<class Number, std::size_t Len>
+Slice<Number, Len> Slice<Number, Len>::operator/(Number val) {
+    Slice<Number, Len> result;
+    std::transform(begin(), end(), result.begin(), [val](Number elem) {return elem / val;});
+    return result;
+}
+
 
 template<class Number, std::size_t Len>
 Number& Slice<Number, Len>::operator[](std::size_t idx) {

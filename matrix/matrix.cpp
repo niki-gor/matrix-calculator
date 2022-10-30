@@ -185,11 +185,7 @@ double det(Matrix<Number, N, N>& m) {
         auto make_null_row = row;
         for (++make_null_row; make_null_row != rows.end(); ++make_null_row) {
             double k = (*make_null_row)[idx] / (*row)[idx];
-            *row *= k; //
-            *make_null_row -= *row;
-            *row /= k; // слегка кринж, знаю.
-            // для немодифицирующих операций (которые создают новые объекты), нужно выделять новую память —
-            // слайсы работают с уже выделенным участком памяти
+            *make_null_row -= *row * k;
         }
     }
     auto diagonal = matrix.main_diagonal();

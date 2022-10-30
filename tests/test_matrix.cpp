@@ -3,6 +3,9 @@
 #include "matrix.hpp"
 
 
+double EPS = 1e-9;
+
+
 TEST(TestMatrix, TestIndices) { // обращение по индексу
     Matrix<int, 2, 3> m({
     1, 2, 3, 
@@ -47,5 +50,5 @@ TEST(TestMatrix, TestDet) {
         -234, 1, 76,
         778, 15, -3
     });
-    EXPECT_EQ(det(m2), 578096);
+    EXPECT_NEAR(det(m2), 578096, EPS);
 }
