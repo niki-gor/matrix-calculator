@@ -193,10 +193,5 @@ double det(Matrix<Number, N, N>& m) {
         }
     }
     auto diagonal = matrix.main_diagonal();
-    for (auto row : matrix.rows()) {
-        for (auto elem : row) 
-            std::cout << elem << ' ';
-        std::cout << '\n';
-    }
     return std::accumulate(diagonal.begin(), diagonal.end(), 1.0, std::multiplies<double>());
 }
