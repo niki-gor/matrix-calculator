@@ -42,6 +42,19 @@ Slice<Number, Len>::Slice(std::array<Number, Len> initial):
     _step{1} {}
 
 template<class Number, std::size_t Len>
+Slice<Number, Len>::Slice(const Slice<Number, Len>& other):
+    _allocated{other._allocated},
+    _begin{other._begin},
+    _step{other._step} {}
+
+template<class Number, std::size_t Len>
+Slice<Number, Len> Slice<Number, Len>::copy() {
+    Slice<Number, Len> result(std::array<Number, Len>{});
+    std::transform(begin(), end(), result.begin(), [](Number elem) {return elem;});
+    return result;
+}
+
+template<class Number, std::size_t Len>
 SliceIterator<Number> Slice<Number, Len>::begin() {
     return SliceIterator<Number>(_begin, _step);
 }

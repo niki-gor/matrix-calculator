@@ -36,6 +36,10 @@ public:
     Slice(Number* start, std::size_t step);
 
     Slice(std::array<Number, Len> initial);
+
+    Slice(const Slice<Number, Len>& other);
+
+    Slice<Number, Len> copy();
     
     SliceIterator<Number> begin();
 
