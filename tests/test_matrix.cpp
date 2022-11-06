@@ -14,6 +14,19 @@ TEST(TestMatrix, TestIndices) { // обращение по индексу
     EXPECT_EQ(m[0][1], 2);
 }
 
+TEST(TestMatrix, TestDiagonalRowColumn) { // извлечение диагонали, строки, столбца
+    Matrix<int, 2, 3> m({
+    1, 2, 3,
+    4, 5, 6
+    });
+    auto diag = m.main_diagonal().copy();
+    EXPECT_EQ(diag, (Slice<int, 2>({1, 5})));
+
+    diag[1] = 777;
+    EXPECT_EQ(diag, (Slice<int, 2>({1, 777})));
+    EXPECT_EQ(m[1][1], 5); // основная матрица не изменилась, потому что использовали copy
+}
+
 TEST(TestMatrix, TestAddSub) { // сложение/вычитание матриц
     Matrix<int, 2, 3> m({
     1, 2, 3, 

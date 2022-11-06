@@ -13,6 +13,12 @@ private:
     Number* _iterator;
     std::size_t _step;
 public:
+    using difference_type = std::ptrdiff_t;
+    using value_type = Number;
+    using pointer = Number*;
+    using reference = Number&;
+    using iterator_category = std::random_access_iterator_tag;
+
     SliceIterator(Number* start, std::size_t step);
 
     SliceIterator<Number> operator++();
@@ -40,10 +46,12 @@ public:
     Slice(const Slice<Number, Len>& other);
 
     Slice<Number, Len> copy();
-    
-    SliceIterator<Number> begin();
 
-    SliceIterator<Number> end();
+    bool operator==(Slice<Number, Len> other) const;
+    
+    SliceIterator<Number> begin() const;
+
+    SliceIterator<Number> end() const;
 
     Number operator*(Slice<Number, Len> other);
 

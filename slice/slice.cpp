@@ -55,12 +55,17 @@ Slice<Number, Len> Slice<Number, Len>::copy() {
 }
 
 template<class Number, std::size_t Len>
-SliceIterator<Number> Slice<Number, Len>::begin() {
+bool Slice<Number, Len>::operator==(Slice<Number, Len> other) const {
+    return std::equal(begin(), end(), other.begin());
+}
+
+template<class Number, std::size_t Len>
+SliceIterator<Number> Slice<Number, Len>::begin() const {
     return SliceIterator<Number>(_begin, _step);
 }
 
 template<class Number, std::size_t Len>
-SliceIterator<Number> Slice<Number, Len>::end() {
+SliceIterator<Number> Slice<Number, Len>::end() const {
     return SliceIterator<Number>(_begin + _step * Len, _step);
 }
 
