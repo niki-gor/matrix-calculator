@@ -52,7 +52,3 @@ TEST(TestMatrix, TestDet) {
     });
     EXPECT_NEAR(det(m2), 578096, EPS);
 }
-
-TEST(TestMatrix, fuck) {
-    EXPECT_EQ(1, 2);
-}
