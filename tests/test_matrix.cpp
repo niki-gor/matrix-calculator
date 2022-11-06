@@ -21,10 +21,48 @@ TEST(TestMatrix, TestDiagonalRowColumn) { // извлечение диагона
     });
     auto diag = m.main_diagonal().copy();
     EXPECT_EQ(diag, (Slice<int, 2>({1, 5})));
-
     diag[1] = 777;
     EXPECT_EQ(diag, (Slice<int, 2>({1, 777})));
-    EXPECT_EQ(m[1][1], 5); // основная матрица не изменилась, потому что использовали copy
+    EXPECT_EQ(m, (Matrix<int, 2, 3>({  // проверяем, что исходная матрица не изменилась
+        1, 2, 3, 
+        4, 5, 6})));
+
+    auto row = m.row(1).copy();
+    EXPECT_EQ(row, (Slice<int, 3>({4, 5, 6})));
+    row[0] = 777;
+    EXPECT_EQ(m, (Matrix<int, 2, 3>({  // проверяем, что исходная матрица не изменилась
+        1, 2, 3, 
+        4, 5, 6})));
+
+    auto col = m.column(0).copy();
+    EXPECT_EQ(col, (Slice<int, 2>({1, 4})));
+    col[1] = 777;
+    EXPECT_EQ(m, (Matrix<int, 2, 3>({  // проверяем, что исходная матрица не изменилась
+        1, 2, 3, 
+        4, 5, 6})));
+}
+
+TEST(TestMatrix, TestSlicesAreSlices) { // проверка работоспособности слайсов
+    Matrix<int, 2, 3> m({
+    1, 2, 3,
+    4, 5, 6
+    });
+    auto diag = m.main_diagonal();
+    diag[1] = 777;
+    EXPECT_EQ(m, (Matrix<int, 2, 3>({
+        1, 2, 3, 
+        4, 777, 6})));
+    
+    auto row = m[0];
+    row[0] = 1337;
+    EXPECT_EQ(m, (Matrix<int, 2, 3>({
+        1337, 2, 3, 
+        4, 777, 6})));
+    
+    m.column(2)[0] = 111111;
+    EXPECT_EQ(m, (Matrix<int, 2, 3>({
+        1337, 2, 111111, 
+        4, 777, 6})));
 }
 
 TEST(TestMatrix, TestAddSub) { // сложение/вычитание матриц

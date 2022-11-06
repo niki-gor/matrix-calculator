@@ -150,5 +150,5 @@ Slice<Number, Len> Slice<Number, Len>::operator/(Number val) {
 
 template<class Number, std::size_t Len>
 Number& Slice<Number, Len>::operator[](std::size_t idx) {
-    return _begin[idx];
+    return _begin[_step * idx];
 }
