@@ -66,6 +66,8 @@ public:
     template<std::size_t SecondCols>
     Matrix<Number, Rows, SecondCols> operator*(Matrix<Number, Cols, SecondCols>& other);
 
+    Slice<Number, Rows> operator*(Slice<Number, Cols> vector);
+
     Matrix<Number, Cols, Rows> transposed();
 
     Slice<Number, std::min(Rows, Cols)> main_diagonal();

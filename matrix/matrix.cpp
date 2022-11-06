@@ -17,7 +17,7 @@ Matrix<Number, Rows, Cols>::Matrix(const Matrix<Number, Rows, Cols>& other):
 template<class Number, std::size_t Rows, std::size_t Cols>
 Matrix<Number, Rows, Cols>::Matrix(std::array<Slice<Number, Cols>, Rows> rows) {
     for (std::size_t i = 0; i < Rows; ++i) {
-        std::copy(rows[i].begin(), rows[i].end(), _storage.begin() + Cols * i);
+        std::transform(rows[i].begin(), rows[i].end(), _storage.begin() + Cols * i, [](Number elem) {return elem;});
     }
 }
 
@@ -149,6 +149,16 @@ Matrix<Number, Rows, SecondCols> Matrix<Number, Rows, Cols>::operator*(Matrix<Nu
         }
     }
     return result;
+}
+
+template<class Number, std::size_t Rows, std::size_t Cols>
+Slice<Number, Rows> Matrix<Number, Rows, Cols>::operator*(Slice<Number, Cols> vector) {
+    Matrix<Number, Cols, 1> other;
+    for (std::size_t i = 0; i < Cols; ++i) {
+        other[i][0] = vector[i];
+    }
+    Matrix<Number, Rows, 1> result = *this * other;
+    return result.column(0).copy();
 }
 
 template<class Number, std::size_t Rows, std::size_t Cols>

@@ -51,7 +51,12 @@ Slice<Number, Len> Slice<Number, Len>::copy() {
 
 template<class Number, std::size_t Len>
 bool Slice<Number, Len>::operator==(Slice<Number, Len> other) const {
-    return std::equal(begin(), end(), other.begin());
+    for (std::size_t i = 0; i < Len; ++i) {
+        if ((*this)[i] != other[i]) {
+            return false;
+        }
+    }
+    return true;
 }
 
 template<class Number, std::size_t Len>
@@ -144,6 +149,6 @@ Slice<Number, Len> Slice<Number, Len>::operator/(Number val) {
 
 
 template<class Number, std::size_t Len>
-Number& Slice<Number, Len>::operator[](std::size_t idx) {
+Number& Slice<Number, Len>::operator[](std::size_t idx) const {
     return _begin[_step * idx];
 }

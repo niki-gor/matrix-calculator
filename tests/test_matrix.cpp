@@ -51,34 +51,56 @@ TEST(TestMatrix, TestConstructors) { // составление векторов 
         4, 5, 6})));
 }
 
-TEST(TestMatrix, TestAddSub) { // сложение/вычитание/умножение объектов одинаковой размерности
+TEST(TestMatrix, TestAddSubEqualDimension) { // сложение/вычитание/умножение объектов одинаковой размерности
     Matrix<int, 2, 3> m({
     1, 2, 3, 
     4, 5, 6});
+
     Matrix<int, 2, 3> n({
     0, 0, -3,
     4, 0, 1000000
     });
 
-    auto add = m + n;
-    Matrix<int, 2, 3> add_res({
-        1, 2, 0,
-        8, 5, 1000006
-    });
-    EXPECT_EQ(add, add_res);
+    EXPECT_EQ(m + n, (Matrix<int, 2, 3>({
+    1, 2, 0,
+    8, 5, 1000006
+    })));
 
-    auto sub = m - n;
-    Matrix<int, 2, 3> sub_res({
-        1, 2, 6,
-        0, 5, -999994
-    });
-    EXPECT_EQ(sub, sub_res);
+    EXPECT_EQ(m - n, (Matrix<int, 2, 3>({
+    1, 2, 6,
+    0, 5, -999994
+    })));
 
     Slice<int, 2> v1 = Slice<int, 2>({1, 2});
     Slice<int, 2> v2 = Slice<int, 2>({10, 15});
     EXPECT_EQ(v1 + v2, (Slice<int, 2>({11, 17})));
     EXPECT_EQ(v1 - v2, (Slice<int, 2>({-9, -13})));
-    EXPECT_EQ(v1 * v2, 40); // скалярное произведение
+    EXPECT_EQ(v1 * v2, 40); // скалярное произведение для векторов
+}
+
+TEST(TestMatrix, TestMultiplication) { // умножение
+    Matrix<int, 3, 2> m({
+    1, 2, 
+    3, 4, 
+    5, 6});
+    EXPECT_EQ(m * 3, (Matrix<int, 3, 2>({ // число на матрицу
+    3, 6, 
+    9, 12, 
+    15, 18})));
+
+    Slice<int, 2> v({-10, 2});
+    EXPECT_EQ(m * v, (Slice<int, 3>({-6, -22, -38}))); // матрица на вектор
+
+    Matrix<int, 2, 2> n({
+    5, 10,
+    7, 7
+    });
+
+    EXPECT_EQ(m * n, (Matrix<int, 3, 2>({ // матрица на матрицу
+    19, 24,
+    43, 58,
+    67, 92
+    })));
 }
 
 TEST(TestMatrix, TestSlicesAreSlices) { // проверка работоспособности слайсов
@@ -90,7 +112,7 @@ TEST(TestMatrix, TestSlicesAreSlices) { // проверка работоспос
     diag[1] = 777;
     EXPECT_EQ(m, (Matrix<int, 2, 3>({
         1, 2, 3, 
-        4, 777, 6})));
+        4, 777, 6}))); // исходная матрица изменилась
     
     auto row = m[0];
     row[0] = 1337;

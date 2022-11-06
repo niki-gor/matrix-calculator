@@ -13,12 +13,6 @@ private:
     Number* _iterator;
     std::size_t _step;
 public:
-    using difference_type = std::ptrdiff_t;
-    using value_type = Number;
-    using pointer = Number*;
-    using reference = Number&;
-    using iterator_category = std::forward_iterator_tag;
-
     SliceIterator(Number* start, std::size_t step);
 
     SliceIterator<Number> operator++();
@@ -79,7 +73,7 @@ public:
     Slice<Number, Len> operator/(Number val);
     
 
-    Number& operator[](std::size_t idx);
+    Number& operator[](std::size_t idx) const;
 };
 
 
