@@ -8,5 +8,5 @@ build: clean
 
 rebuild: clean build
 
-test:
-	ctest
+test: build
+	ctest --test-dir build
