@@ -33,9 +33,9 @@ private:
     std::size_t _step;
 
 public:
-    Slice();
-
     Slice(Number* start, std::size_t step);
+
+    Slice(std::array<Number, Len> initial);
     
     SliceIterator<Number> begin();
 

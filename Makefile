@@ -8,3 +8,5 @@ build: clean
 
 test: build
 	./build/tests/tests
+
+rebuild: clean build
