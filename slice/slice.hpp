@@ -17,7 +17,7 @@ public:
     using value_type = Number;
     using pointer = Number*;
     using reference = Number&;
-    using iterator_category = std::random_access_iterator_tag;
+    using iterator_category = std::forward_iterator_tag;
 
     SliceIterator(Number* start, std::size_t step);
 
@@ -42,8 +42,6 @@ public:
     Slice(Number* start, std::size_t step);
 
     Slice(std::array<Number, Len> initial);
-
-    Slice(const Slice<Number, Len>& other);
 
     Slice<Number, Len> copy();
 

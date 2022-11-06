@@ -19,6 +19,8 @@ public:
 
     Matrix(const Matrix<Number, Rows, Cols>& other);
 
+    Matrix(std::array<Slice<Number, Cols>, Rows> rows);
+
     bool operator==(Matrix<Number, Rows, Cols> other) const;
     
     SliceIterator<Number> begin();

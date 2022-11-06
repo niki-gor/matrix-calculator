@@ -23,23 +23,62 @@ TEST(TestMatrix, TestDiagonalRowColumn) { // извлечение диагона
     EXPECT_EQ(diag, (Slice<int, 2>({1, 5})));
     diag[1] = 777;
     EXPECT_EQ(diag, (Slice<int, 2>({1, 777})));
-    EXPECT_EQ(m, (Matrix<int, 2, 3>({  // проверяем, что исходная матрица не изменилась
+    EXPECT_EQ(m, (Matrix<int, 2, 3>({  // исходная матрица не изменилась
         1, 2, 3, 
         4, 5, 6})));
 
     auto row = m.row(1).copy();
     EXPECT_EQ(row, (Slice<int, 3>({4, 5, 6})));
     row[0] = 777;
-    EXPECT_EQ(m, (Matrix<int, 2, 3>({  // проверяем, что исходная матрица не изменилась
+    EXPECT_EQ(m, (Matrix<int, 2, 3>({
         1, 2, 3, 
         4, 5, 6})));
 
     auto col = m.column(0).copy();
     EXPECT_EQ(col, (Slice<int, 2>({1, 4})));
     col[1] = 777;
-    EXPECT_EQ(m, (Matrix<int, 2, 3>({  // проверяем, что исходная матрица не изменилась
+    EXPECT_EQ(m, (Matrix<int, 2, 3>({
         1, 2, 3, 
         4, 5, 6})));
+}
+
+TEST(TestMatrix, TestConstructors) { // составление векторов из чисел, матрицы из векторов, матрицы из чисел
+    Slice<int, 3> row1({1, 2, 3});
+    Slice<int, 3> row2({4, 5, 6});
+    Matrix<int, 2, 3> m({row1, row2});
+    EXPECT_EQ(m, (Matrix<int, 2, 3>({
+        1, 2, 3, 
+        4, 5, 6})));
+}
+
+TEST(TestMatrix, TestAddSub) { // сложение/вычитание/умножение объектов одинаковой размерности
+    Matrix<int, 2, 3> m({
+    1, 2, 3, 
+    4, 5, 6});
+    Matrix<int, 2, 3> n({
+    0, 0, -3,
+    4, 0, 1000000
+    });
+
+    auto add = m + n;
+    Matrix<int, 2, 3> add_res({
+        1, 2, 0,
+        8, 5, 1000006
+    });
+    EXPECT_EQ(add, add_res);
+
+    auto sub = m - n;
+    Matrix<int, 2, 3> sub_res({
+        1, 2, 6,
+        0, 5, -999994
+    });
+    EXPECT_EQ(sub, sub_res);
+
+    Slice<int, 2> v1 = Slice<int, 2>({1, 2});
+    Slice<int, 2> v2 = Slice<int, 2>({10, 15});
+    EXPECT_EQ(v1 + v2, (Slice<int, 2>({11, 17})));
+    EXPECT_EQ(v1 - v2, (Slice<int, 2>({-9, -13})));
+    EXPECT_EQ(v1 * v2, 40); // скалярное произведение
 }
 
 TEST(TestMatrix, TestSlicesAreSlices) { // проверка работоспособности слайсов
@@ -63,30 +102,6 @@ TEST(TestMatrix, TestSlicesAreSlices) { // проверка работоспос
     EXPECT_EQ(m, (Matrix<int, 2, 3>({
         1337, 2, 111111, 
         4, 777, 6})));
-}
-
-TEST(TestMatrix, TestAddSub) { // сложение/вычитание матриц
-    Matrix<int, 2, 3> m({
-    1, 2, 3, 
-    4, 5, 6});
-    Matrix<int, 2, 3> n({
-    0, 0, -3,
-    4, 0, 1000000
-    });
-
-    auto add = m + n;
-    Matrix<int, 2, 3> add_res({
-        1, 2, 0,
-        8, 5, 1000006
-    });
-    EXPECT_EQ(add, add_res);
-
-    auto sub = m - n;
-    Matrix<int, 2, 3> sub_res({
-        1, 2, 6,
-        0, 5, -999994
-    });
-    EXPECT_EQ(sub, sub_res);
 }
 
 TEST(TestMatrix, TestDet) {

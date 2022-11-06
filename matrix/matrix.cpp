@@ -15,6 +15,13 @@ Matrix<Number, Rows, Cols>::Matrix(const Matrix<Number, Rows, Cols>& other):
     _storage{other._storage} {}
 
 template<class Number, std::size_t Rows, std::size_t Cols>
+Matrix<Number, Rows, Cols>::Matrix(std::array<Slice<Number, Cols>, Rows> rows) {
+    for (std::size_t i = 0; i < Rows; ++i) {
+        std::copy(rows[i].begin(), rows[i].end(), _storage.begin() + Cols * i);
+    }
+}
+
+template<class Number, std::size_t Rows, std::size_t Cols>
 bool Matrix<Number, Rows, Cols>::operator==(Matrix<Number, Rows, Cols> other) const {
     return _storage == other._storage;
 }

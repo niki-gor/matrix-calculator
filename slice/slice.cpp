@@ -32,6 +32,7 @@ Number& SliceIterator<Number>::operator*() const {
 
 template<class Number, std::size_t Len>
 Slice<Number, Len>::Slice(Number* begin, std::size_t step):
+    _allocated{nullptr},
     _begin{begin},
     _step{step} {}
 
@@ -40,12 +41,6 @@ Slice<Number, Len>::Slice(std::array<Number, Len> initial):
     _allocated{std::make_shared<std::array<Number, Len>>(std::move(initial))},
     _begin{_allocated->begin()},
     _step{1} {}
-
-template<class Number, std::size_t Len>
-Slice<Number, Len>::Slice(const Slice<Number, Len>& other):
-    _allocated{other._allocated},
-    _begin{other._begin},
-    _step{other._step} {}
 
 template<class Number, std::size_t Len>
 Slice<Number, Len> Slice<Number, Len>::copy() {
