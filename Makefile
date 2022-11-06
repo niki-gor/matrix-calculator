@@ -1,12 +1,10 @@
-.PHONY: clean build
+.PHONY: clean build test
 
 clean:
 	rm -rf build
 
 build: clean
-	mkdir build && cd build && cmake .. && make
-
-rebuild: clean build
+	mkdir build && cd build && cmake .. && make && cd ..
 
 test: build
-	ctest --test-dir build
+	./build/tests/tests
