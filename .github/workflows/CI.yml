@@ -16,7 +16,7 @@ jobs:
       - name: build
         run: make build
       
-        - name: upload build artifact
+      - name: upload build artifact
         uses: actions/upload-artifact@v3
         with:
           name: artifact_build
